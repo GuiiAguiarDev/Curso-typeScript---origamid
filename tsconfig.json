@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "sourceMap": true,
+
+    //Deixar comentado tambem, porem igual disse, for fazer um projeto deixar ele ativado, igual o
+    //"noImplicitReturns": true,
+
+    "allowJs": false,
+
+    "removeComments": true,
+
+    "strict": true,
+    //não deixa voltar undefined, vamos deixar comentado porque antes dele passar isso
+    //nos temos exemplos que voltam undefied, no proprio curso ele passou valores assim
+    //mas como ele vai um por um e nao deixa varios projetos junto nao vai interferir,
+    //já no nosso aqui vai, então vou deixar comentado, porem quando for fazer um projeto novo
+    //de estudo, exemplo e vida real no ambiente de trabalho sempre usar ele
+    //"noImplicitReturns": true,
+
+    "outDir": "dist",
+    //te obriga a utilizar modules (import e export);
+    "isolatedModules":true,
+
+    //criar no dist o arquivo .d.ts
+    "declaration": true
+  },
+
+  "include": ["src", "plugins"],
+
+  "exclude": ["node_modules"]
+}
+
+//lembrando que o modo completo está no arquivo com nome de
+//tsconfig-backup-modo-completo, nesse aqui ate tirei os comentario
