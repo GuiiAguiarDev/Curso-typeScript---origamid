@@ -1,0 +1,65 @@
+body{
+    font-family: sans-serif;
+    margin: 20px;
+}
+
+/*Faz a imagem e video ficarem responsivel, então para fazer a imagem ficar responsivel sempre
+utilizar o código abaixo*/
+img, video{
+display: block;
+max-width: 100%;
+}
+
+h1{
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+
+#slide-elements{
+    display: grid;
+    grid-area: 1/1;
+}
+
+/*  o simbolo * é para falar com cada elemento que for filho direto, pode ser qualquer 
+um div imagem e etc*/
+#slide-elements>*{
+    /*coluna 1 linha 1*/
+    grid-area: 1/1 ;
+    opacity: 0;
+    /*para sumir os elementos*/
+    visibility: none;
+}
+
+/*Classe para mostrar o slide, lembrando que o codigo abaixo e logo o que está em cima, vao ser
+gerenciados pelo typeScript, no casoa classe slide-elements>* e #slide-elements > .active */
+
+#slide-elements > .active{
+    opacity: 1;
+    visibility: visible;
+}
+
+
+#slide{
+    display: grid;
+}
+
+#slide-controls{
+    grid-area: 1/1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+
+/*Aqui estamos escondendo os botões, porque pelo jeito que fizemos se nao fizer isso
+ eles vao ficar em cima dos slides, pois estrá ocupando tudo devido o grid que fizemos
+ para alterar quando clicamos entao para ocultar e ficar a imageme  ainda ficar
+ funcional estamos fazendo isso*/
+#slide-controls button{
+    opacity: 0;
+    /*Por causa do IOS*/
+    appearance: none;
+    /*Quando vc da um toque e mostra na tela, mas apenas para mobile, fazendo isso
+    tiramos para desktop*/
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
