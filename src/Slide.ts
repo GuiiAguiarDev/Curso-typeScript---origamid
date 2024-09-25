@@ -27,8 +27,12 @@ export default class Slide {
     this.time = time;
     this.timeout = null;
     this.pausedTimeout = null;
-    //slide numero que está começa do 0
-    this.index = 0;
+    //slide numero que está começa do 0, pode ser zero ficando o codigo assim   this.index = 0;
+    //mas vamos deixa igual abaixo
+    //vamos pegar o primeiro lá do localStorage agora para ver se tem ou nao tem
+    this.index = localStorage.getItem("activeSlide")
+      ? Number(localStorage.getItem("activeSlide"))
+      : 0;
     //qual slide está mostra o slide de acordo com index
     this.slide = this.slides[this.index];
     this.paused = false;
@@ -43,6 +47,12 @@ export default class Slide {
   //esse tambem para esconder os anteriores
   hide(el: Element) {
     el.classList.remove("active");
+    //reiniciar o video começar de novo, assim que mudar de slide ou voltar  para ele ele iniciar
+    //do zero começar tudo de novo
+    if (el instanceof HTMLVideoElement) {
+      el.currentTime = 0;
+      el.pause();
+    }
   }
 
   //Mostrar o slide
@@ -52,6 +62,9 @@ export default class Slide {
     this.index = index;
     //Mostrar qual elemento esta ativo;
     this.slide = this.slides[this.index];
+    //salvando qual slide a pessoa está no localStorage se está no 1 2 3 4 e etc
+    localStorage.setItem("activeSlide", String(this.index));
+
     //removendo a classe sctive que está no css que serve para mo0strar o slide, esse codigo retira do anterior
     //depois que ativa no novo para nao ficar codigo duplicado no meu html
     //inclusive tira o active que deixamos como inicial no meu arquivo index.html
@@ -59,7 +72,29 @@ export default class Slide {
     this.slides.forEach((el) => this.hide(el));
     //adicionando a classe active que está no css para mostrar o slide
     this.slide.classList.add("active");
-    this.auto(this.time);
+    //verificando se é video para gente trabahar em cima do video, que vai ter o tempo diferente
+    //dos slides ou seja se tiver 10 segundo vai rodar os 10 segundo e assim por diante
+    if (this.slide instanceof HTMLVideoElement) {
+      this.autoVideo(this.slide);
+    } else {
+      this.auto(this.time);
+    }
+  }
+  autoVideo(video: HTMLVideoElement) {
+    //para começar sozinho o video
+    //igual a false tira o muted do video
+    video.muted = true;
+    //iniciar automatico o video assim que chega nele nos slides
+    video.play();
+    let firstPlay = true;
+    //só quando o video estiver tocando
+    video.addEventListener("playing", () => {
+      //quantidade que eu quero que o video fique tocando
+      //tocar o total dele o tamanho que ele tiver
+      //verificano se é o primeiro fristPlay ocorre so uma vez isso
+      if (firstPlay) this.auto(video.duration * 1000);
+      firstPlay = false;
+    });
   }
   //Funções
   //----------------------------------------------------------------------------------------
@@ -105,6 +140,8 @@ export default class Slide {
       // pausar, mas se eu solto o dedo ou tiro ou clique
       //ele ativa o botão para ir para o proximo e eu nao quero isso
       this.paused = true;
+      //pausar o video quando eu apertar nele e soltar ele voltar a rodar
+      if (this.slide instanceof HTMLVideoElement) this.slide.pause();
     }, 300);
   }
 
@@ -117,6 +154,8 @@ export default class Slide {
     if (this.paused) {
       this.paused = false;
       this.timeout?.continue();
+      //pausar o video quando eu apertar nele e soltar ele voltar a rodar
+      if (this.slide instanceof HTMLVideoElement) this.slide.play();
     }
   }
 
