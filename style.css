@@ -3,6 +3,13 @@ body{
     margin: 20px;
 }
 
+/*Para que no mobile quando eu apertar para para slider e animation da thumb nao mostre as propriedades quando eu soltar
+é um bug que tem para mobile, como se eu estivesse apertando com botão direito em cima do slide para ver as propriedades
+com isso vamos tirar isso*/
+body.paused{
+    user-select: none;
+}
+
 /*Faz a imagem e video ficarem responsivel, então para fazer a imagem ficar responsivel sempre
 utilizar o código abaixo*/
 img, video{
@@ -48,6 +55,9 @@ gerenciados pelo typeScript, no casoa classe slide-elements>* e #slide-elements 
     grid-area: 1/1;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    /*Coloquei para que meu absolute que está nos meu thumb nao ficassem estorando a pagina ou seja saindo do meu slide
+    o absolute está na classe que está com nome de slide-thumb*/
+    position: relative;
 }
 
 
@@ -62,4 +72,50 @@ gerenciados pelo typeScript, no casoa classe slide-elements>* e #slide-elements 
     /*Quando vc da um toque e mostra na tela, mas apenas para mobile, fazendo isso
     tiramos para desktop*/
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+
+#slide-thumb{
+display: flex;
+position: absolute;
+width: 100%;
+pointer-events: none;
+}
+
+#slide-thumb > span{
+    flex: 1;
+    display: block;
+    height: 4px;
+    background: rgb(255, 255, 255,0.2);
+    margin: 5px;
+    border-radius: 4px;
+    /*Esconder quando tiver do lado de fora ou seja nao passar por fora a cor do meu back ground so dentro da thumb mesmo que fiz*/
+    overflow: hidden;
+    /*Isolar o elemento para nao zuar principalmente no safari*/
+    isolation: isolate;
+
+}
+
+/*Só para quando tiver ativo*/
+#slide-thumb .thumb-item.active{
+    display: block;
+    /*herda do pai dele*/
+    height: inherit;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    transform: translateX(-100%);
+    /*running é que está ocorrendo e assim consigo pausar e continuar ela de acordo com meu slide*/
+    animation: thumb forwards linear running ;
+}
+
+/*Só para quando pausar o slider para pausar a animação tbm da thumb, se nao nao funciona*/
+#slide-thumb .thumb-item.paused{
+  animation-play-state: paused;
+}
+
+
+@keyframes thumb{
+    to{
+        transform: initial;
+    }
 }

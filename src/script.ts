@@ -1,4 +1,3 @@
-import { slice } from "lodash";
 import Slide from "./Slide.js";
 
 const container = document.getElementById("slide");
@@ -16,5 +15,4 @@ if (container && elements && controls && elements.children.length) {
     3000
   );
 
-  slide.show(3);
 }

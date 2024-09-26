@@ -12,6 +12,8 @@ export default class Slide {
   timeout: Timeout | null;
   pausedTimeout: Timeout | null;
   paused: boolean;
+  thumbItens: HTMLElement[] | null;
+  thumb: HTMLElement | null;
 
   //o que vai receber
   constructor(
@@ -29,13 +31,21 @@ export default class Slide {
     this.pausedTimeout = null;
     //slide numero que está começa do 0, pode ser zero ficando o codigo assim   this.index = 0;
     //mas vamos deixa igual abaixo
-    //vamos pegar o primeiro lá do localStorage agora para ver se tem ou nao tem
+    //vamos pegar o primeiro lá do localStorage agora para ver se tem ou nao tem.
+
+    //Quando reinicia o slide ou seja quando dou f5 na pagina ele começa de onde parou
+    //pois ele pega no localstore o ultimo, então se dou f5 quando carregar o f5 vai mostrar o ultimo que estava quando deu f5.
+    //se nunca entrou começa do 0
     this.index = localStorage.getItem("activeSlide")
       ? Number(localStorage.getItem("activeSlide"))
       : 0;
     //qual slide está mostra o slide de acordo com index
     this.slide = this.slides[this.index];
     this.paused = false;
+
+    this.thumbItens = null;
+    this.thumb = null;
+
     //chamando a função
     this.init();
   }
@@ -64,6 +74,12 @@ export default class Slide {
     this.slide = this.slides[this.index];
     //salvando qual slide a pessoa está no localStorage se está no 1 2 3 4 e etc
     localStorage.setItem("activeSlide", String(this.index));
+
+    if (this.thumbItens) {
+      this.thumb = this.thumbItens[this.index];
+      this.thumbItens.forEach((el) => el.classList.remove("active"));
+      this.thumb.classList.add("active");
+    }
 
     //removendo a classe sctive que está no css que serve para mo0strar o slide, esse codigo retira do anterior
     //depois que ativa no novo para nao ficar codigo duplicado no meu html
@@ -109,6 +125,9 @@ export default class Slide {
     //e ele sair rapido doq vc estava pq tava contando o tempo já, alem dele chamar o pausar slider
     //que vai está nesse timeout que vamos fazer
     this.timeout = new Timeout(() => this.next(), time);
+    //Quando acabar o tempo do ultimo ele começar tudo de novo e fica o tempo certo de cada item nao precisa eu setar no
+    //no css so colocando no ts ele ja pega o tempo certo de cada jubtamente com a animação da thumb
+    if (this.thumb) this.thumb.style.animationDuration = `${time}ms`;
   }
 
   //controle que manda para o anterior slide
@@ -140,6 +159,8 @@ export default class Slide {
       // pausar, mas se eu solto o dedo ou tiro ou clique
       //ele ativa o botão para ir para o proximo e eu nao quero isso
       this.paused = true;
+      //quando eu passar o slider, pausar a animation tbm da thumb, ele vai adicionar essa classe, que ja criei lá no meu css
+      this.thumb?.classList.add('paused');
       //pausar o video quando eu apertar nele e soltar ele voltar a rodar
       if (this.slide instanceof HTMLVideoElement) this.slide.pause();
     }, 300);
@@ -154,6 +175,8 @@ export default class Slide {
     if (this.paused) {
       this.paused = false;
       this.timeout?.continue();
+      //removendo a classe pause da quando pausar slider pausar animation tbm da thumb
+      this.thumb?.classList.remove('paused');
       //pausar o video quando eu apertar nele e soltar ele voltar a rodar
       if (this.slide instanceof HTMLVideoElement) this.slide.play();
     }
@@ -179,10 +202,23 @@ export default class Slide {
     prevButton.addEventListener("pointerup", () => this.prev());
     nextButton.addEventListener("pointerup", () => this.next());
   }
-  //vai dicionar os controles inicialmente
+
+  //trumb, intens que ficam no slide mostrando a posição
+  private addThumbItems() {
+    const thumbContainer = document.createElement("div");
+    thumbContainer.id = "slide-thumb";
+    for (let i = 0; i < this.slides.length; i++) {
+      thumbContainer.innerHTML += `<span><span class="thumb-item"><span></span>`;
+    }
+
+    this.controls.appendChild(thumbContainer);
+    this.thumbItens = Array.from(document.querySelectorAll(".thumb-item"));
+  }
+  //vai dicionar os controles inicialmentes
   private init() {
     //ele que vai mostrar o primeiro slide em cima do index tbm
     this.addControls();
+    this.addThumbItems();
     this.show(this.index);
   }
 
