@@ -8,6 +8,12 @@ body{
 com isso vamos tirar isso*/
 body.paused{
     user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+    touch-action: manipulation;
+
 }
 
 /*Faz a imagem e video ficarem responsivel, então para fazer a imagem ficar responsivel sempre
@@ -49,6 +55,11 @@ gerenciados pelo typeScript, no casoa classe slide-elements>* e #slide-elements 
 
 #slide{
     display: grid;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 20px auto;
+    max-width: 800px;
+    background: black;
 }
 
 #slide-controls{

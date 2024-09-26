@@ -152,6 +152,10 @@ export default class Slide {
   //função pausar slide
 
   pause() {
+    /*Para que no mobile quando eu apertar para para slider e animation da thumb nao mostre as propriedades quando eu soltar
+é um bug que tem para mobile, como se eu estivesse apertando com botão direito em cima do slide para ver as propriedades
+com isso vamos tirar isso*/
+    document.body.classList.add("paused");
     //limpando o anterior
     this.pausedTimeout = new Timeout(() => {
       this.timeout?.pause();
@@ -159,8 +163,9 @@ export default class Slide {
       // pausar, mas se eu solto o dedo ou tiro ou clique
       //ele ativa o botão para ir para o proximo e eu nao quero isso
       this.paused = true;
+
       //quando eu passar o slider, pausar a animation tbm da thumb, ele vai adicionar essa classe, que ja criei lá no meu css
-      this.thumb?.classList.add('paused');
+      this.thumb?.classList.add("paused");
       //pausar o video quando eu apertar nele e soltar ele voltar a rodar
       if (this.slide instanceof HTMLVideoElement) this.slide.pause();
     }, 300);
@@ -171,12 +176,16 @@ export default class Slide {
   //e sim continuasse normal, acabou bugando essa parte, pois ele fica pausado pra sempre, então
   //temos que inclementar essa função.
   continue() {
+    /*Para que no mobile quando eu apertar para para slider e animation da thumb nao mostre as propriedades quando eu soltar
+é um bug que tem para mobile, como se eu estivesse apertando com botão direito em cima do slide para ver as propriedades
+com isso vamos tirar isso, aqui estou removendo quando eu continuo se nao da bug*/
+    document.body.classList.remove("paused");
     this.pausedTimeout?.clear();
     if (this.paused) {
       this.paused = false;
       this.timeout?.continue();
       //removendo a classe pause da quando pausar slider pausar animation tbm da thumb
-      this.thumb?.classList.remove('paused');
+      this.thumb?.classList.remove("paused");
       //pausar o video quando eu apertar nele e soltar ele voltar a rodar
       if (this.slide instanceof HTMLVideoElement) this.slide.play();
     }
@@ -193,7 +202,13 @@ export default class Slide {
     this.controls.appendChild(nextButton);
 
     this.controls.addEventListener("pointerdown", () => this.pause());
-    this.controls.addEventListener("pointerup", () => this.continue());
+    //abaixo era this.controls, mas ai no mobile se eu clicar e arrastar para fora do slide e soltar
+    //ele trava a animação da thumb e nao continua, então colocando document a gente resolve esse
+    //problema
+    document.addEventListener("pointerup", () => this.continue());
+    //vamos ter duas funções para continaur o slider, pois só pointerup as vezes pode nao funcionar
+    //então vamos colocar o abaixo tbm
+    document.addEventListener("touchend", () => this.continue());
     //adicionando o evento
     //pointerup - funciona com perfil de toque tambem e quando tira o dedo ou mouse ele vai para o proximo
     //então caso seguro o dedo ou mouse ele dar pause, mas vamos ter fazer o pause ainda
